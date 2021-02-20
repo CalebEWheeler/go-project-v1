@@ -1,2 +1,5 @@
+config
+config/config.go
+
 ignore
 ignore/ignore.go
