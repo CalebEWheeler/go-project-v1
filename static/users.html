@@ -8,12 +8,16 @@
   </head>
   <body>
     <header>All Users</header>
+    <div>
+      <h4>Create New User</h4>
+      <a href="/user/create">Click Here</button>
+    </div>
     <!-- find out how to loop through and create the below template for each person -->
-    <!-- {{ range . }} -->
-    <!-- <div class="flex"> -->
+    {{ range . }}
+    <div class="flex">
       <p>Name: {{ .Name }}</p>
-      <!-- <a href=("/users/"+ {{.Name}}) >View</a> -->
-    <!-- </div> -->
-    <!-- {{ end }} -->
+      <a href="/users/{{.Name}}">View</a>
+    </div>
+    {{ end }}
   </body>
 </html>

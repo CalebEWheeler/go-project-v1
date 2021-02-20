@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/CalebEWheeler/go-project-v1/config"
 	"github.com/gorilla/mux"
@@ -15,9 +16,12 @@ var db *gorm.DB
 var err error
 
 type User struct {
-	gorm.Model
-	Name  string
-	Email string
+	// gorm.Model
+	ID        uint `gorm:"primaryKey"`
+	Name      string
+	Email     string
+	CreatedAt *time.Time
+	UpdatedAt time.Time
 }
 
 func InitialMigration() {
@@ -53,6 +57,17 @@ func AllUsers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func NewUserForm(w http.ResponseWriter, r *http.Request) {
+	var user User
+
+	parsedTemplate, _ := template.ParseFiles("static/createUser.html")
+	err := parsedTemplate.Execute(w, user)
+	if err != nil {
+		fmt.Println("Error executing template:", err)
+		return
+	}
+}
+
 func NewUser(w http.ResponseWriter, r *http.Request) {
 	db, err = gorm.Open("mysql", config.MySQLCredentials())
 	if err != nil {
@@ -60,13 +75,26 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	vars := mux.Vars(r)
-	name := vars["name"]
-	email := vars["email"]
+	// vars := mux.Vars(r)
+	// name := vars["name"]
+	// email := vars["email"]
+
+	name := r.FormValue("name")
+	email := r.FormValue("email")
+
+	fmt.Printf("Name: %s | Email: %s", name, email)
+
+	// r.ParseForm()
+
+	// for key, value := range r.Form {
+	// 	fmt.Printf("%s = %s", key, value)
+	// }
+
+	// fmt.Fprintf(w, mux.Vars(r))
 
 	db.Create(&User{Name: name, Email: email})
-
-	fmt.Fprintf(w, "New User Successfully Created")
+	fmt.Fprintf(w, "New User '%s' with the email address '%s' created!", name, email)
+	// fmt.Fprintf(w, "New User Successfully Created")
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +113,17 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "User Successfully Deleted")
 }
+
+// func GoUpdate(w http.ResponseWriter, r*http.Request) {
+// 	var user User
+
+// 	parsedTemplate, _ := template.ParseFiles("static/updateUser.html")
+// 	err := parsedTemplate.Execute(w, user)
+// 	if err != nil {
+// 		fmt.Println("Error executing template:", err)
+// 		return
+// 	}
+// }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	db, err = gorm.Open("mysql", config.MySQLCredentials())
