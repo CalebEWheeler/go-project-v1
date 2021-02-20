@@ -9,7 +9,7 @@ import (
 )
 
 type User struct {
-	Name string `json:"string"`
+	Name string `json:"name"`
 }
 
 func main() {
@@ -23,29 +23,20 @@ func main() {
 
 	defer db.Close()
 
-	insert, err := db.Query("INSERT INTO users VALUES('ELLIOT')")
-
+	results, err := db.Query("SELECT name FROM users")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	defer insert.Close()
-	// results, err := db.Query("SELECT name FROM users")
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
+	for results.Next() {
+		var user User
 
-	// for results.Next() {
-	// 	var user user
+		err = results.Scan(&user.Name)
+		if err != nil {
+			panic(err.Error())
+		}
 
-	// 	err = results.Scan(&user.Name) {
-	// 		if err != nil {
-	// 			panic(err.Error())
-	// 		}
+		fmt.Println(user.Name)
+	}
 
-	// 		fmt.Println(user.Name)
-	// 	}
-	// }
-
-	fmt.Println("Successfully Connected to MySQL database with ignored config file")
 }
