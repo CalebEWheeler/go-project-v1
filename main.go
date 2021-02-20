@@ -18,9 +18,9 @@ func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", helloWorld).Methods("GET")
 	myRouter.HandleFunc("/users", AllUsers).Methods("GET")
-	myRouter.HandleFunc("/user/{name}/{id}", NewUser).Methods("POST")
+	myRouter.HandleFunc("/user/{name}/{email}", NewUser).Methods("POST")
 	myRouter.HandleFunc("/user/{name}", DeleteUser).Methods("DELETE")
-	myRouter.HandleFunc("/user/{name}/{id}", UpdateUser).Methods("PUT")
+	myRouter.HandleFunc("/user/{name}/{email}", UpdateUser).Methods("PUT")
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
 }
 
