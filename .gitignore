@@ -1,1 +1,2 @@
-"github.com/CalebEWheeler/go-project-v2/ignore"
+.ignore
+.ignore/ignore.go
