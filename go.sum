@@ -1,2 +1,4 @@
 github.com/CalebEWheeler/go-project-v2 v0.0.0-20210219235058-2da070585aae h1:y6vqsw4ZAA26PFF4yv7ggTuCNgY7YFVxmh/TMOPTcUY=
 github.com/CalebEWheeler/go-project-v2 v0.0.0-20210219235058-2da070585aae/go.mod h1:rDxtuThDQoOhfTclTf+pjOo594bYP1Cwbi6eylU/Thg=
+github.com/go-sql-driver/mysql v1.5.0 h1:ozyZYNQW3x3HtqT1jira07DN2PArx2v7/mN66gGcHOs=
+github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
