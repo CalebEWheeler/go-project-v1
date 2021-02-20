@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 
 	"github.com/CalebEWheeler/go-project-v1/config"
@@ -20,7 +20,6 @@ type User struct {
 	Email string
 }
 
-//will run if database testdb already exists
 func InitialMigration() {
 	db, err = gorm.Open("mysql", config.MySQLCredentials())
 	if err != nil {
@@ -41,7 +40,17 @@ func AllUsers(w http.ResponseWriter, r *http.Request) {
 
 	var users []User
 	db.Find(&users)
-	json.NewEncoder(w).Encode(users)
+	//returning in json format to the browser the extracted values from database
+	//store it in a var and pass to html
+	// json.NewEncoder(w).Encode(users)
+	// var retrievedUsers = users
+
+	parsedTemplate, _ := template.ParseFiles("static/users.html")
+	err := parsedTemplate.Execute(w, users)
+	if err != nil {
+		fmt.Println("Error executing template:", err)
+		return
+	}
 }
 
 func NewUser(w http.ResponseWriter, r *http.Request) {
