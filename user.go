@@ -93,7 +93,10 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, mux.Vars(r))
 
 	db.Create(&User{Name: name, Email: email})
-	fmt.Fprintf(w, "New User '%s' with the email address '%s' created!", name, email)
+	// fmt.Fprintf(w, "New User '%s' with the email address '%s' created!", name, email)
+
+	http.Redirect(w, r, "/users", 302)
+
 	// fmt.Fprintf(w, "New User Successfully Created")
 }
 
