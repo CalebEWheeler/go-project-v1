@@ -36,6 +36,8 @@ func initDatabase() {
 	}
 	fmt.Println("Database connection successfully opened")
 
+	database.DBConn.AutoMigrate(&person.Person{})
+	fmt.Println("Database Migrated")
 }
 
 func main() {

@@ -2,7 +2,14 @@ package person
 
 import (
 	"github.com/gofiber/fiber"
+	"github.com/jinzhu/gorm"
 )
+
+type Person struct {
+	gorm.Model
+	Name string
+	Age  string
+}
 
 func GetPeople(c *fiber.Ctx) {
 	c.Send("All People")
