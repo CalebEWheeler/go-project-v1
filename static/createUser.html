@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      Create New User
+    </title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./css/style.css">
+  </head>
+  <body>
+    <div>
+      <a href="/users">View All Users</a>
+    </div>
+    <h4>Create New User</h4>
+    
+
+    <form method="POST" action="/user/{name}/{email}">
+      
+      <!-- pass name as value -->
+      <label for="name">Name</label>
+      <input id="name" name="name" type="text" placeholder="First Name...">
+      
+      <!-- pass age -->
+      <label for="age">Age</label>
+      <input id="age" name="age" type="text" placeholder="Age...">
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>

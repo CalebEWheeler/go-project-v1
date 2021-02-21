@@ -2,32 +2,50 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/CalebEWheeler/go-project-v1/config"
+	"github.com/CalebEWheeler/go-project-v1/database"
+	"github.com/CalebEWheeler/go-project-v1/person"
+
+	// _ "github.com/go-sql-driver/mysql"
+	// "gorm.io/driver/mysql"
+	// "gorm.io/gorm"
+	"github.com/gofiber/fiber"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	//run with 'go run main.go
-	//kill with 'ctrl+c'
-	fmt.Fprintf(w, "Hello World")
+func helloWorld(c *fiber.Ctx) {
+	c.Send("Hello, World!")
 }
 
-func handleRequests() {
-	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", helloWorld).Methods("GET")
-	myRouter.HandleFunc("/users", AllUsers).Methods("GET")
-	myRouter.HandleFunc("/user/{name}/{email}", NewUser).Methods("POST")
-	myRouter.HandleFunc("/user/{name}", DeleteUser).Methods("DELETE")
-	myRouter.HandleFunc("/user/{name}/{email}", UpdateUser).Methods("PUT")
-	log.Fatal(http.ListenAndServe(":8080", myRouter))
+func setupRoutes(app *fiber.App) {
+	app.Get("/api/v1/person", person.GetPeople)
+	app.Get("/api/v1/person/:id", person.GetPerson)
+	app.Post("/api/v1/person", person.CreatePerson)
+	app.Put("/api/v1/person/:id", person.UpdatePerson)
+	app.Delete("/api/v1/person/:id", person.DeletePerson)
+}
+
+func initDatabase() {
+	var err error
+
+	database.DBConn, err = gorm.Open("mysql", config.MySQLCredentials())
+	if err != nil {
+		panic("Failed to connect to the database")
+	}
+	fmt.Println("Database connection successfully opened")
+
+	database.DBConn.AutoMigrate(&person.Person{})
+	fmt.Println("Database Migrated")
 }
 
 func main() {
-	fmt.Println("Go ORM Basics")
+	app := fiber.New()
+	initDatabase()
+	defer database.DBConn.Close()
 
-	InitialMigration()
+	setupRoutes(app)
 
-	handleRequests()
+	app.Listen(8080)
 }

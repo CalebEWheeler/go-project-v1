@@ -1,12 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/CalebEWheeler/go-project-v1/config"
-	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -15,12 +15,14 @@ var db *gorm.DB
 var err error
 
 type User struct {
-	gorm.Model
-	Name  string
-	Email string
+	// gorm.Model
+	ID        uint `gorm:"primaryKey"`
+	Name      string
+	Age       string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-//will run if database testdb already exists
 func InitialMigration() {
 	db, err = gorm.Open("mysql", config.MySQLCredentials())
 	if err != nil {
@@ -41,7 +43,24 @@ func AllUsers(w http.ResponseWriter, r *http.Request) {
 
 	var users []User
 	db.Find(&users)
-	json.NewEncoder(w).Encode(users)
+
+	parsedTemplate, _ := template.ParseFiles("static/users.html")
+	err := parsedTemplate.Execute(w, users)
+	if err != nil {
+		fmt.Println("Error executing template:", err)
+		return
+	}
+}
+
+func NewUserForm(w http.ResponseWriter, r *http.Request) {
+	var user User
+
+	parsedTemplate, _ := template.ParseFiles("static/createUser.html")
+	err := parsedTemplate.Execute(w, user)
+	if err != nil {
+		fmt.Println("Error executing template:", err)
+		return
+	}
 }
 
 func NewUser(w http.ResponseWriter, r *http.Request) {
@@ -51,13 +70,19 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	vars := mux.Vars(r)
-	name := vars["name"]
-	email := vars["email"]
+	// vars := mux.Vars(r)
+	// name := vars["name"]
+	// email := vars["email"]
 
-	db.Create(&User{Name: name, Email: email})
+	name := r.FormValue("name")
+	age := r.FormValue("age")
 
-	fmt.Fprintf(w, "New User Successfully Created")
+	fmt.Printf("Name: %s | Age: %s", name, age)
+
+	db.Create(&User{Name: name, Age: age})
+
+	http.Redirect(w, r, "/users", 302)
+
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -67,32 +92,52 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	vars := mux.Vars(r)
-	name := vars["name"]
+	id := r.URL.Query().Get("id")
+	fmt.Fprintf(w, "ID value from URL: %s", id)
 
-	var user User
-	db.Where("name = ?", name).Find(&user)
-	db.Delete(&user)
+	// var user User
+	// db.Where("id = ?", id).Find(&user)
+	// db.Delete(&user)
 
-	fmt.Fprintf(w, "User Successfully Deleted")
+	// db.Delete(&user, id)
+
+	// http.Redirect(w, r, "/users", 200)
 }
 
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
+func UpdateUserForm(w http.ResponseWriter, r *http.Request) {
 	db, err = gorm.Open("mysql", config.MySQLCredentials())
 	if err != nil {
 		panic("Could not connect to the database")
 	}
 	defer db.Close()
 
-	vars := mux.Vars(r)
-	name := vars["name"]
-	email := vars["email"]
+	// name := r.URL.Query().Get("name")
+	id := r.URL.Query().Get("id")
 
 	var user User
-	db.Where("name = ?", name).Find(&user)
+	db.Where("id = ?", id).Find(&user)
 
-	user.Email = email
+	parsedTemplate, _ := template.ParseFiles("static/updateUser.html")
+	err := parsedTemplate.Execute(w, user)
+	if err != nil {
+		fmt.Println("Error executing template:", err)
+		return
+	}
+
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+
+	id := r.URL.Query().Get("id")
+	name := r.FormValue("name")
+	age := r.FormValue("age")
+
+	var user User
+	db.Where("id = ?", id).Find(&user)
+
+	user.Name = name
+	user.Age = age
 
 	db.Save(&user)
-	fmt.Fprintf(w, "Successfully Updated User")
+	// fmt.Fprintf(w, "Successfully Updated User")
 }
