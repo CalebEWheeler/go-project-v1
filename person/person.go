@@ -1,6 +1,8 @@
 package person
 
 import (
+	"strconv"
+
 	"github.com/CalebEWheeler/go-project-v1/database"
 	"github.com/gofiber/fiber"
 	"github.com/jinzhu/gorm"
@@ -9,7 +11,7 @@ import (
 type Person struct {
 	gorm.Model
 	Name string
-	Age  string
+	Age  int
 }
 
 func GetPeople(c *fiber.Ctx) {
@@ -29,21 +31,36 @@ func GetPerson(c *fiber.Ctx) {
 
 func CreatePerson(c *fiber.Ctx) {
 	db := database.DBConn
-	var person Person
-	person.Name = "Caleb"
-	person.Age = "26"
+
+	person := new(Person)
+	if err := c.BodyParser(person); err != nil {
+		c.Status(503).Send(err)
+		return
+	}
 
 	db.Create(&person)
 	c.JSON(person)
 }
 
 func UpdatePerson(c *fiber.Ctx) {
-	c.Send("Updates a Person")
+	id := c.Params("id")
+	name := c.Query("name")
+	age, _ := strconv.Atoi(c.Query("age"))
+	db := database.DBConn
+
+	var person Person
+	db.First(&person, id)
+	person.Name = name
+	person.Age = age
+
+	db.Save(&person)
+	c.JSON(person)
 }
 
 func DeletePerson(c *fiber.Ctx) {
 	id := c.Params("id")
 	db := database.DBConn
+
 	var person Person
 	db.First(&person, id)
 	if person.Name == "" {
