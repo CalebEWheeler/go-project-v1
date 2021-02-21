@@ -2,22 +2,41 @@
 <html lang="en">
   <head>
     <title>
-      AllUsers
+      All Users
     </title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="./css/style.css">
   </head>
   <body>
-    <header>All Users</header>
-    <div>
-      <h4>Create New User</h4>
-      <a href="/user/create">Click Here</button>
-    </div>
-    <!-- find out how to loop through and create the below template for each person -->
-    {{ range . }}
+    
     <div class="flex">
-      <p>Name: {{ .Name }}</p>
-      <a href="/users/{{.Name}}">View</a>
+      <a href="/users">View All Users</a>
+      <a href="/user/create">Create New User</a>
+    </div>
+    <!-- TODO: CREATE LINK TO SHOW ALL USERS AND CREATE USER -->
+    
+    <!-- TODO: EACH USER HAVE LINK TO UPDATE A USER -->
+    <h4>All Users</h4>
+    
+    {{ range . }}
+    <div>
+
+      <form method="GET" action="/user/update">
+        
+        <p>User: {{ .Name }}</p>
+        <p>Age: {{ .Age }}</p>
+        <input type="hidden" name="id" value="{{.ID}}">
+        
+        <button type="submit">View</button>
+      </form>
+      <form method="POST" action="/user/{{.ID}}">
+        <!-- <input type="hidden" name="id" value="{{.ID}}"> -->
+        <button type="submit">Delete User</button>
+      
+      </form>
+
     </div>
     {{ end }}
+
   </body>
 </html>

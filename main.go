@@ -19,9 +19,10 @@ func handleRequests() {
 	myRouter.HandleFunc("/", helloWorld).Methods("GET")
 	myRouter.HandleFunc("/users", AllUsers).Methods("GET")
 	myRouter.HandleFunc("/user/create", NewUserForm).Methods("GET")
-	myRouter.HandleFunc("/user/{name}/{email}", NewUser).Methods("POST")
-	myRouter.HandleFunc("/user/{name}", DeleteUser).Methods("DELETE")
-	myRouter.HandleFunc("/user/{name}/{email}", UpdateUser).Methods("PUT")
+	myRouter.HandleFunc("/user/{name}/{id}", NewUser).Methods("POST")
+	myRouter.HandleFunc("/user/{id}", DeleteUser).Methods("DELETE")
+	myRouter.HandleFunc("/user/update", UpdateUserForm).Methods("GET")
+	myRouter.HandleFunc("/user/update", UpdateUser).Methods("PUT")
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
 }
 

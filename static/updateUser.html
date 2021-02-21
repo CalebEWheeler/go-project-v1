@@ -5,19 +5,23 @@
       Update User
     </title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="./css/style.css">
   </head>
   <body>
-    <header>Update User</header>
-    <!-- find out how to loop through and create the below template for each person -->
-    <form method="POST" action="">
+
+    <h4>Update User</h4>
+
+    <!-- TODO: LINK TO VIEW ALL USERS, UPDATE A USER, AND DELETE A USER -->
+
+    <form method="POST" action="user/update">
       
       <!-- pass name as value -->
       <label for="name">Name</label>
-      <input id="name" name="name" type="text">
+      <input id="name" name="name" type="text" value={{.Name}}>
       
       <!-- pass age as value -->
       <label for="age">Age</label>
-      <input id="age" name="age" type="text">
+      <input id="age" name="age" type="text" value={{.Age}}>
       
       <button type="submit">Submit</button>
     </form>
