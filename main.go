@@ -1,8 +1,18 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/CalebEWheeler/go-project-v1/config"
+	"github.com/CalebEWheeler/go-project-v1/database"
 	"github.com/CalebEWheeler/go-project-v1/person"
+
+	// _ "github.com/go-sql-driver/mysql"
+	// "gorm.io/driver/mysql"
+	// "gorm.io/gorm"
 	"github.com/gofiber/fiber"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 func helloWorld(c *fiber.Ctx) {
@@ -17,8 +27,21 @@ func setupRoutes(app *fiber.App) {
 	app.Delete("/api/v1/person/:id", person.DeletePerson)
 }
 
+func initDatabase() {
+	var err error
+
+	database.DBConn, err = gorm.Open("mysql", config.MySQLCredentials())
+	if err != nil {
+		panic("Failed to connect to the database")
+	}
+	fmt.Println("Database connection successfully opened")
+
+}
+
 func main() {
 	app := fiber.New()
+	initDatabase()
+	defer database.DBConn.Close()
 
 	setupRoutes(app)
 
