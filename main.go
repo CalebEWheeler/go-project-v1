@@ -7,18 +7,22 @@ import (
 	"github.com/CalebEWheeler/go-project-v1/database"
 	"github.com/CalebEWheeler/go-project-v1/person"
 
-	// _ "github.com/go-sql-driver/mysql"
-	// "gorm.io/driver/mysql"
-	// "gorm.io/gorm"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func helloWorld(c *fiber.Ctx) {
-	c.Send("Hello, World!")
+func setupApp() *fiber.App {
+	app := fiber.New()
+	//can use - app.Use(authenticate.New(), attachuser.Handle, authorize.Handle)
+	//then - authenticateduser.Setup(app)
+	//if a user is needed in the future to modify RestAPI?
+
+	return app
 }
 
+//setupRoutes will tie in methods found in person.go to be ran to the corresponding url path
 func setupRoutes(app *fiber.App) {
 	app.Get("/api/v1/person", person.GetPeople)
 	app.Get("/api/v1/person/:id", person.GetPerson)
@@ -27,6 +31,7 @@ func setupRoutes(app *fiber.App) {
 	app.Delete("/api/v1/person/:id", person.DeletePerson)
 }
 
+//initDatabase will establish the initial database connection when the app is ran with gorm.Open() which will take in two params; database type, database credentials
 func initDatabase() {
 	var err error
 
@@ -41,11 +46,13 @@ func initDatabase() {
 }
 
 func main() {
-	app := fiber.New()
+	app := setupApp()
 	initDatabase()
 	defer database.DBConn.Close()
 
 	setupRoutes(app)
 
+	//will establish the base route is localhost:8080
+	// NEED TO CHANGE WHEN DEPLOYED
 	app.Listen(8080)
 }
