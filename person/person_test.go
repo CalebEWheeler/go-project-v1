@@ -1,10 +1,11 @@
 package person
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/CalebEWheeler/go-project-v1/database"
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/utils"
 )
@@ -15,20 +16,15 @@ import (
 
 func TestGetPeople(t *testing.T) {
 	app := fiber.New()
-	db := database.DBConn
-	var people []Person
-	db.Find(&people)
 
 	app.Get("/api/v1/person", func(c *fiber.Ctx) {
 		c.SendStatus(400)
-		c.JSON(people)
 	})
 
 	resp, err := app.Test(httptest.NewRequest("GET", "/api/v1/person", nil))
 
 	utils.AssertEqual(t, nil, err, "app.Test")
 	utils.AssertEqual(t, resp.Request.Method, "GET", "Request Method")
-	utils.AssertEqual(t, `[{"ID":3,"CreatedAt":"2021-02-21T14:10:39-06:00","UpdatedAt":"2021-02-21T14:10:39-06:00","DeletedAt":null,"Name":"Caleb","Age":26},{"ID":5,"CreatedAt":"2021-02-21T16:50:30-06:00","UpdatedAt":"2021-02-21T16:50:30-06:00","DeletedAt":null,"Name":"amanda","Age":25},{"ID":6,"CreatedAt":"2021-02-23T14:40:54-06:00","UpdatedAt":"2021-02-23T14:40:54-06:00","DeletedAt":null,"Name":"jason","Age":26},{"ID":7,"CreatedAt":"2021-02-23T14:44:33-06:00","UpdatedAt":"2021-02-23T14:47:05-06:00","DeletedAt":null,"Name":"chase","Age":22}]`, resp.Body, "Response Body Check")
 	utils.AssertEqual(t, 400, resp.StatusCode, "Status code")
 }
 
@@ -37,7 +33,25 @@ func TestGetPerson(t *testing.T) {
 }
 
 func TestCreatePerson(t *testing.T) {
+	app := fiber.New()
 
+	person := &Person{
+		Name: "bob",
+		Age:  22,
+	}
+
+	jsonPerson, _ := json.Marshal(person)
+
+	app.Post("/api/v1/person", func(c *fiber.Ctx) {
+		c.SendStatus(200)
+	})
+
+	resp, err := app.Test(httptest.NewRequest("POST", "/api/v1/person", bytes.NewBuffer(jsonPerson)))
+
+	utils.AssertEqual(t, nil, err, "app.Test")
+	utils.AssertEqual(t, "bob", person.Name, "Expected and Actual name values are equal.")
+	utils.AssertEqual(t, 22, person.Age, "Expected and Actual Age values are equal.")
+	utils.AssertEqual(t, 200, resp.StatusCode, "OK response is expected")
 }
 
 func TestUpdatePerson(t *testing.T) {
