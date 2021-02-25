@@ -8,4 +8,5 @@ require (
 	github.com/gofiber/utils v0.0.10
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jinzhu/now v1.1.1 // indirect
+	github.com/stretchr/testify v1.7.0
 )

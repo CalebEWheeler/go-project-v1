@@ -1,7 +1,6 @@
 package person
 
 import (
-	"io/ioutil"
 	"net/http/httptest"
 	"testing"
 
@@ -31,59 +30,28 @@ func TestGetPerson(t *testing.T) {
 	app := fiber.New()
 
 	app.Get("/api/v1/person/5", func(c *fiber.Ctx) {
-		c.Body()
+		c.SendStatus(400)
 	})
 
-	req := httptest.NewRequest("GET", "/api/v1/person/3", nil)
-	//name = Caleb
-	//age = 26
+	resp, err := app.Test(httptest.NewRequest("GET", "/api/v1/person/5", nil))
 
-	resp, _ := app.Test(req)
-
-	if resp.StatusCode == 200 {
-		body, _ := ioutil.ReadAll(resp.Body)
-		// utils.AssertEqual(t, nil, err, "app.Test")
-		utils.AssertEqual(t, "27", body, "test")
-		utils.AssertEqual(t, 200, resp.StatusCode, "Status code")
-	}
-
-	// utils.AssertEqual(t, 400, resp.StatusCode, "OK response is expected.")
+	utils.AssertEqual(t, nil, err, "app.Test")
+	utils.AssertEqual(t, resp.Request.Method, "GET", "Request Method")
+	utils.AssertEqual(t, 400, resp.StatusCode, "Status code")
 }
 
 func TestCreatePerson(t *testing.T) {
-	// app := fiber.New()
+	app := fiber.New()
 
-	// person := &Person{
-	// 	Name: "bob",
-	// 	Age:  22,
-	// }
+	app.Post("/api/v1/person", func(c *fiber.Ctx) {
+		c.SendStatus(200)
+	})
 
-	// jsonPerson, _ := json.Marshal(person)
+	resp, err := app.Test(httptest.NewRequest("POST", "/api/v1/person", nil))
 
-	// app.Post("/api/v1/person", func(c *fiber.Ctx) {
-	// 	// c.SendStatus(200)
-	// 	person := new(Person)
-	// 	person.Name = "bob"
-	// 	person.Age = 22
-
-	// 	if err := c.BodyParser(person); err != nil {
-	// 		fmt.Println("error = ", err)
-	// 		c.SendStatus(200)
-	// 	}
-
-	// 	fmt.Println("person = ", person)
-	// 	fmt.Println("person.Name = ", person.Name)
-	// 	fmt.Println("person.Age = ", person.Age)
-
-	// 	c.SendString(person)
-	// })
-
-	// resp, err := app.Test(httptest.NewRequest("POST", "/api/v1/person", bytes.NewBuffer(jsonPerson)))
-
-	// utils.AssertEqual(t, nil, err, "app.Test")
-	// utils.AssertEqual(t, person.Name, jsonPerson, "Expected and Actual name values are equal.")
-	// utils.AssertEqual(t, 22, person.Age, "Expected and Actual Age values are equal.")
-	// utils.AssertEqual(t, 200, resp.StatusCode, "OK response is expected")
+	utils.AssertEqual(t, nil, err, "app.Test")
+	utils.AssertEqual(t, "POST", resp.Request.Method, "Request Method")
+	utils.AssertEqual(t, 200, resp.StatusCode, "OK response is expected")
 }
 
 func TestUpdatePerson(t *testing.T) {
