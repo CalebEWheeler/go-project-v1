@@ -69,5 +69,15 @@ func TestUpdatePerson(t *testing.T) {
 }
 
 func TestDeletePerson(t *testing.T) {
+	app := fiber.New()
 
+	app.Delete("/api/v1/person", func(c *fiber.Ctx) {
+		c.SendStatus(200)
+	})
+
+	resp, err := app.Test(httptest.NewRequest("DELETE", "/api/v1/person", nil))
+
+	utils.AssertEqual(t, nil, err, "app.Test")
+	utils.AssertEqual(t, "DELETE", resp.Request.Method, "Request Method")
+	utils.AssertEqual(t, 200, resp.StatusCode, "OK response is expected")
 }
